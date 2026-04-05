@@ -14,6 +14,8 @@ const corsOptions = {
   optionsSuccessStatus: 200,
   credentials: true
 };
+
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -23,7 +25,7 @@ const MONGODB_URI = process.env.MONGODB_URL;
 mongoose.connect(MONGODB_URI)
 .then(() => console.log('MongoDB connection established successfully'))
 .catch((err) => console.log('MongoDB connection error: ', err));
-                          
+
 // Routes
 app.post('/api/contact', async (req, res) => {
   try {
