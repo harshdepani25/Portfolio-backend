@@ -6,10 +6,15 @@ require('dotenv').config();
 const ContactMessage = require('./models/ContactMessage');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT;
 
 // Middleware
-app.use(cors());
+const corsOptions = {
+  origin: ['http://localhost:5173', 'https://portfolio-frontend-mocha-phi.vercel.app', 'https://portfolio-frontend-mocha-phi.vercel.app/'],
+  optionsSuccessStatus: 200,
+  credentials: true
+};
+app.use(cors(corsOptions));
 app.use(express.json());
 
 // MongoDB Connection
@@ -18,7 +23,7 @@ const MONGODB_URI = process.env.MONGODB_URL;
 mongoose.connect(MONGODB_URI)
 .then(() => console.log('MongoDB connection established successfully'))
 .catch((err) => console.log('MongoDB connection error: ', err));
-
+                          
 // Routes
 app.post('/api/contact', async (req, res) => {
   try {
