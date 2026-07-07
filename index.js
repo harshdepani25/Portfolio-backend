@@ -9,12 +9,32 @@ const app = express();
 const PORT = process.env.PORT || 5000;
 
 // Middleware
+const allowedOrigins = process.env.ALLOWED_ORIGINS
+  ? process.env.ALLOWED_ORIGINS.split(',').map(o => o.trim())
+  : ['http://localhost:5173', 'https://portfolio-frontend-mocha-phi.vercel.app'];
+
 const corsOptions = {
-  origin: ['http://localhost:5173', 'https://portfolio-frontend-mocha-phi.vercel.app', 'https://portfolio-frontend-mocha-phi.vercel.app/'],
+  origin: function (origin, callback) {
+    // Allow requests with no origin (like mobile apps, curl, postman, etc.)
+    if (!origin) return callback(null, true);
+
+    const isLocalhost = /^http:\/\/localhost(:\d+)?$/.test(origin) || /^http:\/\/127\.0\.0\.1(:\d+)?$/.test(origin);
+    const isVercel = /\.vercel\.app$/.test(origin);
+    const isAllowed = allowedOrigins.some(allowedOpt => {
+      const cleanAllowed = allowedOpt.replace(/\/$/, '');
+      const cleanOrigin = origin.replace(/\/$/, '');
+      return cleanAllowed === cleanOrigin;
+    });
+
+    if (isLocalhost || isVercel || isAllowed) {
+      callback(null, true);
+    } else {
+      callback(null, false);
+    }
+  },
   optionsSuccessStatus: 200,
   credentials: true
 };
-
 
 app.use(cors(corsOptions));
 app.use(express.json());
